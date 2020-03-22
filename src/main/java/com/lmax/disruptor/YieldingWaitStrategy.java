@@ -34,7 +34,7 @@ public final class YieldingWaitStrategy implements WaitStrategy
     {
         long availableSequence;
         int counter = SPIN_TRIES;
-
+        //自旋锁
         while ((availableSequence = dependentSequence.get()) < sequence)
         {
             counter = applyWaitMethod(barrier, counter);
@@ -55,6 +55,7 @@ public final class YieldingWaitStrategy implements WaitStrategy
 
         if (0 == counter)
         {
+            //让给另一个线程
             Thread.yield();
         }
         else

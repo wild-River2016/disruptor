@@ -30,13 +30,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 public final class BatchEventProcessor<T>
     implements EventProcessor
 {
+    /**
+     * 闲置状态
+     */
     private static final int IDLE = 0;
+    /**
+     * 暂停状态
+     */
     private static final int HALTED = IDLE + 1;
+    /**
+     * 运行状态
+     */
     private static final int RUNNING = HALTED + 1;
-
+    /**
+     * 运行状态标记
+     */
     private final AtomicInteger running = new AtomicInteger(IDLE);
+    /**
+     *处理事件时的异常处理器
+     * 警告！！！
+     * 默认的异常处理器{@link com.lmax.disruptor.dsl.Disruptor#exceptionHandler}，在出现异常时会打断运行，会导致死锁！
+     */
     private ExceptionHandler<? super T> exceptionHandler = new FatalExceptionHandler();
     private final DataProvider<T> dataProvider;
+    /**
+     * 序号栅栏，用于协调该消费者与生产者和其他消费者之间的速度
+     */
     private final SequenceBarrier sequenceBarrier;
     private final EventHandler<? super T> eventHandler;
     private final Sequence sequence = new Sequence(Sequencer.INITIAL_CURSOR_VALUE);
